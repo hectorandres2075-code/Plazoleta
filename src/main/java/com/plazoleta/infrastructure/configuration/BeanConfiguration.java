@@ -3,6 +3,7 @@ package com.plazoleta.infrastructure.configuration;
 import com.plazoleta.application.port.input.CreateDishUseCase;
 import com.plazoleta.application.port.input.CreateRestaurantUseCase;
 import com.plazoleta.application.port.input.GetRestaurantUseCase;
+import com.plazoleta.application.port.input.ListDishesUseCase;
 import com.plazoleta.application.port.input.ListRestaurantsUseCase;
 import com.plazoleta.application.port.input.UpdateDishUseCase;
 import com.plazoleta.application.port.output.AuthenticatedUserPort;
@@ -12,6 +13,7 @@ import com.plazoleta.application.port.output.UserServicePort;
 import com.plazoleta.application.service.CreateDishService;
 import com.plazoleta.application.service.CreateRestaurantService;
 import com.plazoleta.application.service.GetRestaurantService;
+import com.plazoleta.application.service.ListDishesService;
 import com.plazoleta.application.service.ListRestaurantsService;
 import com.plazoleta.application.service.UpdateDishService;
 import com.plazoleta.infrastructure.output.client.UserRestClientAdapter;
@@ -75,5 +77,11 @@ public class BeanConfiguration {
     @Bean
     public ListRestaurantsUseCase listRestaurantsUseCase(RestaurantPersistencePort restaurantPersistencePort) {
         return new ListRestaurantsService(restaurantPersistencePort);
+    }
+
+    @Bean
+    public ListDishesUseCase listDishesUseCase(DishPersistencePort dishPersistencePort,
+                                               RestaurantPersistencePort restaurantPersistencePort) {
+        return new ListDishesService(dishPersistencePort, restaurantPersistencePort);
     }
 }

@@ -5,6 +5,12 @@ import com.plazoleta.domain.model.Dish;
 import com.plazoleta.infrastructure.output.persistence.entity.DishEntity;
 import com.plazoleta.infrastructure.output.persistence.repository.DishRepository;
 
+import com.plazoleta.domain.model.PageResult;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import java.util.Optional;
 
 public class DishPersistenceAdapter implements DishPersistencePort {
@@ -20,6 +26,22 @@ public class DishPersistenceAdapter implements DishPersistencePort {
         return dishRepository.findById(id)
                 .map(s -> new Dish(s.getId(), s.getNombre(), s.getPrecio(), s.getDescripcion(), s.getUrlImagen(),
                         s.getCategoria(), s.isActivo(), s.getIdRestaurante()));
+    }
+
+    @Override
+    public PageResult<Dish> findActiveByRestaurant(Long restaurantId, String categoria, int page, int size) {
+        // Agrupados por categoría: primero se ordena por categoría y luego por nombre.
+        Pageable pageable = PageRequest.of(page, size, Sort.by("categoria", "nombre"));
+        Page<DishEntity> result = (categoria == null)
+                ? dishRepository.findByIdRestauranteAndActivoTrue(restaurantId, pageable)
+                : dishRepository.findByIdRestauranteAndActivoTrueAndCategoriaIgnoreCase(restaurantId, categoria, pageable);
+
+        return new PageResult<>(
+                result.getContent().stream()
+                        .map(s -> new Dish(s.getId(), s.getNombre(), s.getPrecio(), s.getDescripcion(),
+                                s.getUrlImagen(), s.getCategoria(), s.isActivo(), s.getIdRestaurante()))
+                        .toList(),
+                result.getNumber(), result.getSize(), result.getTotalElements(), result.getTotalPages());
     }
 
     @Override

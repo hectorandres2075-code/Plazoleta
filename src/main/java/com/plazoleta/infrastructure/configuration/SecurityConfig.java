@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/restaurants").hasRole("ADMINISTRADOR")
                 .requestMatchers(HttpMethod.GET, "/api/v1/restaurants").hasRole("CLIENTE")
+                .requestMatchers(HttpMethod.GET, "/api/v1/restaurants/*/dishes").hasRole("CLIENTE")
                 .requestMatchers(HttpMethod.POST, "/api/v1/dishes").hasRole("PROPIETARIO")
                 .requestMatchers(HttpMethod.PATCH, "/api/v1/dishes/*").hasRole("PROPIETARIO")
                 .anyRequest().authenticated())
