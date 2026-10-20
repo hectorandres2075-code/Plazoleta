@@ -1,7 +1,9 @@
 package com.plazoleta.infrastructure.input.rest;
 
 import com.plazoleta.application.port.input.CreateRestaurantUseCase;
+import com.plazoleta.application.port.input.GetRestaurantUseCase;
 import com.plazoleta.domain.model.Restaurant;
+import com.plazoleta.infrastructure.input.rest.dto.OwnerIdResponse;
 import com.plazoleta.infrastructure.input.rest.dto.RestaurantRequest;
 import com.plazoleta.infrastructure.input.rest.dto.RestaurantResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +25,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class RestaurantController {
 
     private final CreateRestaurantUseCase createRestaurantUseCase;
+    private final GetRestaurantUseCase getRestaurantUseCase;
 
-    public RestaurantController(CreateRestaurantUseCase createRestaurantUseCase) {
+    public RestaurantController(CreateRestaurantUseCase createRestaurantUseCase,
+                                GetRestaurantUseCase getRestaurantUseCase) {
         this.createRestaurantUseCase = createRestaurantUseCase;
+        this.getRestaurantUseCase = getRestaurantUseCase;
+    }
+
+    @Operation(summary = "Consultar el propietario de un restaurante", description = "Lo usa el microservicio de Usuarios")
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/{id}/owner")
+    public OwnerIdResponse getOwner(@PathVariable Long id) {
+        return new OwnerIdResponse(getRestaurantUseCase.getRestaurant(id).getIdPropietario());
     }
 
     @Operation(summary = "Crear restaurante", description = "Solo el ADMINISTRADOR. El propietario debe existir y tener rol PROPIETARIO")

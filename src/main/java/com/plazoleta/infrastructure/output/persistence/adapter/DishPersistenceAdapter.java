@@ -5,12 +5,21 @@ import com.plazoleta.domain.model.Dish;
 import com.plazoleta.infrastructure.output.persistence.entity.DishEntity;
 import com.plazoleta.infrastructure.output.persistence.repository.DishRepository;
 
+import java.util.Optional;
+
 public class DishPersistenceAdapter implements DishPersistencePort {
 
     private final DishRepository dishRepository;
 
     public DishPersistenceAdapter(DishRepository dishRepository) {
         this.dishRepository = dishRepository;
+    }
+
+    @Override
+    public Optional<Dish> findById(Long id) {
+        return dishRepository.findById(id)
+                .map(s -> new Dish(s.getId(), s.getNombre(), s.getPrecio(), s.getDescripcion(), s.getUrlImagen(),
+                        s.getCategoria(), s.isActivo(), s.getIdRestaurante()));
     }
 
     @Override

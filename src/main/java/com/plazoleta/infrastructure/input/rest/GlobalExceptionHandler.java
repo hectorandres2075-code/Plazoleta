@@ -1,5 +1,6 @@
 package com.plazoleta.infrastructure.input.rest;
 
+import com.plazoleta.domain.exception.DishNotFoundException;
 import com.plazoleta.domain.exception.InvalidDishException;
 import com.plazoleta.domain.exception.InvalidRestaurantException;
 import com.plazoleta.domain.exception.NotRestaurantOwnerException;
@@ -26,6 +27,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidDishException.class)
     public ResponseEntity<Map<String, String>> handleInvalidDish(InvalidDishException ex) {
         return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(DishNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleDishNotFound(DishNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
     }
 
     @ExceptionHandler(RestaurantNotFoundException.class)
