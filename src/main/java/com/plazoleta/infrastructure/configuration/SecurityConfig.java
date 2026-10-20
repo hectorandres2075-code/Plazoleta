@@ -3,6 +3,7 @@ package com.plazoleta.infrastructure.configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -25,7 +26,8 @@ public class SecurityConfig {
             .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**").permitAll()
-                // Las reglas por rol de cada endpoint se agregan aquí, HU por HU.
+                .requestMatchers(HttpMethod.POST, "/api/v1/restaurants").hasRole("ADMINISTRADOR")
+                .requestMatchers(HttpMethod.POST, "/api/v1/dishes").hasRole("PROPIETARIO")
                 .anyRequest().authenticated())
             .addFilterBefore(new JwtAuthenticationFilter(secret), UsernamePasswordAuthenticationFilter.class);
         return http.build();

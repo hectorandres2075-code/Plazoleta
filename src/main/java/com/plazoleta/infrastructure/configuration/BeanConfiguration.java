@@ -1,0 +1,56 @@
+package com.plazoleta.infrastructure.configuration;
+
+import com.plazoleta.application.port.input.CreateDishUseCase;
+import com.plazoleta.application.port.input.CreateRestaurantUseCase;
+import com.plazoleta.application.port.output.AuthenticatedUserPort;
+import com.plazoleta.application.port.output.DishPersistencePort;
+import com.plazoleta.application.port.output.RestaurantPersistencePort;
+import com.plazoleta.application.port.output.UserServicePort;
+import com.plazoleta.application.service.CreateDishService;
+import com.plazoleta.application.service.CreateRestaurantService;
+import com.plazoleta.infrastructure.output.client.UserRestClientAdapter;
+import com.plazoleta.infrastructure.output.persistence.adapter.DishPersistenceAdapter;
+import com.plazoleta.infrastructure.output.persistence.adapter.RestaurantPersistenceAdapter;
+import com.plazoleta.infrastructure.output.persistence.repository.DishRepository;
+import com.plazoleta.infrastructure.output.security.AuthenticatedUserAdapter;
+import com.plazoleta.infrastructure.output.persistence.repository.RestaurantRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class BeanConfiguration {
+
+    @Bean
+    public RestaurantPersistencePort restaurantPersistencePort(RestaurantRepository restaurantRepository) {
+        return new RestaurantPersistenceAdapter(restaurantRepository);
+    }
+
+    @Bean
+    public UserServicePort userServicePort(@Value("${usuarios.base-url}") String baseUrl) {
+        return new UserRestClientAdapter(baseUrl);
+    }
+
+    @Bean
+    public CreateRestaurantUseCase createRestaurantUseCase(RestaurantPersistencePort restaurantPersistencePort,
+                                                           UserServicePort userServicePort) {
+        return new CreateRestaurantService(restaurantPersistencePort, userServicePort);
+    }
+
+    @Bean
+    public DishPersistencePort dishPersistencePort(DishRepository dishRepository) {
+        return new DishPersistenceAdapter(dishRepository);
+    }
+
+    @Bean
+    public AuthenticatedUserPort authenticatedUserPort() {
+        return new AuthenticatedUserAdapter();
+    }
+
+    @Bean
+    public CreateDishUseCase createDishUseCase(DishPersistencePort dishPersistencePort,
+                                               RestaurantPersistencePort restaurantPersistencePort,
+                                               AuthenticatedUserPort authenticatedUserPort) {
+        return new CreateDishService(dishPersistencePort, restaurantPersistencePort, authenticatedUserPort);
+    }
+}
