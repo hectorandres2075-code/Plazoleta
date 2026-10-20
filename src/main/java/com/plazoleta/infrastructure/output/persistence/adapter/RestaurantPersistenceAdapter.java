@@ -5,6 +5,11 @@ import com.plazoleta.domain.model.Restaurant;
 import com.plazoleta.infrastructure.output.persistence.entity.RestaurantEntity;
 import com.plazoleta.infrastructure.output.persistence.repository.RestaurantRepository;
 
+import com.plazoleta.domain.model.PageResult;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 import java.util.Optional;
 
 public class RestaurantPersistenceAdapter implements RestaurantPersistencePort {
@@ -25,6 +30,17 @@ public class RestaurantPersistenceAdapter implements RestaurantPersistencePort {
         return restaurantRepository.findById(id)
                 .map(e -> new Restaurant(e.getId(), e.getNombre(), e.getNit(), e.getDireccion(),
                         e.getTelefono(), e.getUrlLogo(), e.getIdPropietario()));
+    }
+
+    @Override
+    public PageResult<Restaurant> findAllOrderedByName(int page, int size) {
+        Page<RestaurantEntity> result = restaurantRepository.findAll(PageRequest.of(page, size, Sort.by("nombre")));
+        return new PageResult<>(
+                result.getContent().stream()
+                        .map(e -> new Restaurant(e.getId(), e.getNombre(), e.getNit(), e.getDireccion(),
+                                e.getTelefono(), e.getUrlLogo(), e.getIdPropietario()))
+                        .toList(),
+                result.getNumber(), result.getSize(), result.getTotalElements(), result.getTotalPages());
     }
 
     @Override
