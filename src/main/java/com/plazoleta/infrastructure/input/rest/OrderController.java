@@ -2,12 +2,14 @@ package com.plazoleta.infrastructure.input.rest;
 
 import com.plazoleta.application.port.input.AssignOrderUseCase;
 import com.plazoleta.application.port.input.CreateOrderUseCase;
+import com.plazoleta.application.port.input.DeliverOrderUseCase;
 import com.plazoleta.application.port.input.ListOrdersUseCase;
 import com.plazoleta.application.port.input.MarkOrderReadyUseCase;
 import com.plazoleta.domain.model.Order;
 import com.plazoleta.domain.model.OrderDish;
 import com.plazoleta.domain.model.OrderStatus;
 import com.plazoleta.domain.model.PageResult;
+import com.plazoleta.infrastructure.input.rest.dto.DeliverRequest;
 import com.plazoleta.infrastructure.input.rest.dto.OrderRequest;
 import com.plazoleta.infrastructure.input.rest.dto.PageResponse;
 import com.plazoleta.infrastructure.input.rest.dto.OrderResponse;
@@ -35,13 +37,25 @@ public class OrderController {
     private final ListOrdersUseCase listOrdersUseCase;
     private final AssignOrderUseCase assignOrderUseCase;
     private final MarkOrderReadyUseCase markOrderReadyUseCase;
+    private final DeliverOrderUseCase deliverOrderUseCase;
 
     public OrderController(CreateOrderUseCase createOrderUseCase, ListOrdersUseCase listOrdersUseCase,
-                           AssignOrderUseCase assignOrderUseCase, MarkOrderReadyUseCase markOrderReadyUseCase) {
+                           AssignOrderUseCase assignOrderUseCase, MarkOrderReadyUseCase markOrderReadyUseCase,
+                           DeliverOrderUseCase deliverOrderUseCase) {
         this.createOrderUseCase = createOrderUseCase;
         this.listOrdersUseCase = listOrdersUseCase;
         this.assignOrderUseCase = assignOrderUseCase;
         this.markOrderReadyUseCase = markOrderReadyUseCase;
+        this.deliverOrderUseCase = deliverOrderUseCase;
+    }
+
+    @Operation(summary = "Entregar pedido",
+            description = "Solo el EMPLEADO del restaurante. El pedido debe estar LISTO y el PIN debe ser el "
+                    + "que recibió el cliente por SMS. Pasa a ENTREGADO")
+    @SecurityRequirement(name = "bearerAuth")
+    @PatchMapping("/{id}/deliver")
+    public OrderResponse deliver(@PathVariable Long id, @Valid @RequestBody DeliverRequest request) {
+        return OrderResponse.from(deliverOrderUseCase.deliverOrder(id, request.getPin()));
     }
 
     @Operation(summary = "Marcar pedido como listo",

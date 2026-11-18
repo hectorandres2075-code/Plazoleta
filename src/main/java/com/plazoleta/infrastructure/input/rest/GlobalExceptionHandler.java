@@ -5,6 +5,7 @@ import com.plazoleta.domain.exception.ActiveOrderExistsException;
 import com.plazoleta.domain.exception.InvalidDishException;
 import com.plazoleta.domain.exception.InvalidOrderException;
 import com.plazoleta.domain.exception.InvalidOrderStateException;
+import com.plazoleta.domain.exception.InvalidPinException;
 import com.plazoleta.domain.exception.OrderNotFoundException;
 import com.plazoleta.domain.exception.InvalidPaginationException;
 import com.plazoleta.domain.exception.InvalidRestaurantException;
@@ -38,6 +39,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidOrderException.class)
     public ResponseEntity<Map<String, String>> handleInvalidOrder(InvalidOrderException ex) {
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidPinException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidPin(InvalidPinException ex) {
         return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
     }
 
