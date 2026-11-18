@@ -6,10 +6,12 @@ import com.plazoleta.domain.exception.InvalidDishException;
 import com.plazoleta.domain.exception.InvalidOrderException;
 import com.plazoleta.domain.exception.InvalidOrderStateException;
 import com.plazoleta.domain.exception.InvalidPinException;
+import com.plazoleta.domain.exception.OrderCannotBeCancelledException;
 import com.plazoleta.domain.exception.OrderNotFoundException;
 import com.plazoleta.domain.exception.InvalidPaginationException;
 import com.plazoleta.domain.exception.InvalidRestaurantException;
 import com.plazoleta.domain.exception.MessagingServiceUnavailableException;
+import com.plazoleta.domain.exception.NotOrderOwnerException;
 import com.plazoleta.domain.exception.NotRestaurantEmployeeException;
 import com.plazoleta.domain.exception.NotRestaurantOwnerException;
 import com.plazoleta.domain.exception.RestaurantNotFoundException;
@@ -45,6 +47,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidPinException.class)
     public ResponseEntity<Map<String, String>> handleInvalidPin(InvalidPinException ex) {
         return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(NotOrderOwnerException.class)
+    public ResponseEntity<Map<String, String>> handleNotOrderOwner(NotOrderOwnerException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(OrderCannotBeCancelledException.class)
+    public ResponseEntity<Map<String, String>> handleCannotCancel(OrderCannotBeCancelledException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
     }
 
     @ExceptionHandler(OrderNotFoundException.class)

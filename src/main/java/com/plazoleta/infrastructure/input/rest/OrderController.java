@@ -1,6 +1,7 @@
 package com.plazoleta.infrastructure.input.rest;
 
 import com.plazoleta.application.port.input.AssignOrderUseCase;
+import com.plazoleta.application.port.input.CancelOrderUseCase;
 import com.plazoleta.application.port.input.CreateOrderUseCase;
 import com.plazoleta.application.port.input.DeliverOrderUseCase;
 import com.plazoleta.application.port.input.ListOrdersUseCase;
@@ -38,15 +39,25 @@ public class OrderController {
     private final AssignOrderUseCase assignOrderUseCase;
     private final MarkOrderReadyUseCase markOrderReadyUseCase;
     private final DeliverOrderUseCase deliverOrderUseCase;
+    private final CancelOrderUseCase cancelOrderUseCase;
 
     public OrderController(CreateOrderUseCase createOrderUseCase, ListOrdersUseCase listOrdersUseCase,
                            AssignOrderUseCase assignOrderUseCase, MarkOrderReadyUseCase markOrderReadyUseCase,
-                           DeliverOrderUseCase deliverOrderUseCase) {
+                           DeliverOrderUseCase deliverOrderUseCase, CancelOrderUseCase cancelOrderUseCase) {
         this.createOrderUseCase = createOrderUseCase;
         this.listOrdersUseCase = listOrdersUseCase;
         this.assignOrderUseCase = assignOrderUseCase;
         this.markOrderReadyUseCase = markOrderReadyUseCase;
         this.deliverOrderUseCase = deliverOrderUseCase;
+        this.cancelOrderUseCase = cancelOrderUseCase;
+    }
+
+    @Operation(summary = "Cancelar pedido",
+            description = "Solo el CLIENTE dueño del pedido, y solo si sigue PENDIENTE. Pasa a CANCELADO")
+    @SecurityRequirement(name = "bearerAuth")
+    @PatchMapping("/{id}/cancel")
+    public OrderResponse cancel(@PathVariable Long id) {
+        return OrderResponse.from(cancelOrderUseCase.cancelOrder(id));
     }
 
     @Operation(summary = "Entregar pedido",

@@ -42,6 +42,8 @@ import com.plazoleta.application.service.MarkOrderReadyService;
 import com.plazoleta.infrastructure.output.client.MessagingRestClientAdapter;
 import com.plazoleta.application.port.input.DeliverOrderUseCase;
 import com.plazoleta.application.service.DeliverOrderService;
+import com.plazoleta.application.port.input.CancelOrderUseCase;
+import com.plazoleta.application.service.CancelOrderService;
 
 @Configuration
 public class BeanConfiguration {
@@ -154,5 +156,11 @@ public class BeanConfiguration {
     public DeliverOrderUseCase deliverOrderUseCase(OrderPersistencePort orderPersistencePort,
                                                    AuthenticatedUserPort authenticatedUserPort) {
         return new DeliverOrderService(orderPersistencePort, authenticatedUserPort);
+    }
+
+    @Bean
+    public CancelOrderUseCase cancelOrderUseCase(OrderPersistencePort orderPersistencePort,
+                                                 AuthenticatedUserPort authenticatedUserPort) {
+        return new CancelOrderService(orderPersistencePort, authenticatedUserPort);
     }
 }
