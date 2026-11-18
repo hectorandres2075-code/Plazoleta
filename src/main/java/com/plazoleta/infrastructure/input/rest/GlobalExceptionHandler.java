@@ -1,7 +1,9 @@
 package com.plazoleta.infrastructure.input.rest;
 
 import com.plazoleta.domain.exception.DishNotFoundException;
+import com.plazoleta.domain.exception.ActiveOrderExistsException;
 import com.plazoleta.domain.exception.InvalidDishException;
+import com.plazoleta.domain.exception.InvalidOrderException;
 import com.plazoleta.domain.exception.InvalidPaginationException;
 import com.plazoleta.domain.exception.InvalidRestaurantException;
 import com.plazoleta.domain.exception.NotRestaurantOwnerException;
@@ -28,6 +30,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidPaginationException.class)
     public ResponseEntity<Map<String, String>> handleInvalidPagination(InvalidPaginationException ex) {
         return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidOrderException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidOrder(InvalidOrderException ex) {
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ActiveOrderExistsException.class)
+    public ResponseEntity<Map<String, String>> handleActiveOrder(ActiveOrderExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidDishException.class)

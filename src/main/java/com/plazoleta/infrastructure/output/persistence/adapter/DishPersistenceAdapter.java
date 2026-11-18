@@ -11,6 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public class DishPersistenceAdapter implements DishPersistencePort {
@@ -26,6 +28,14 @@ public class DishPersistenceAdapter implements DishPersistencePort {
         return dishRepository.findById(id)
                 .map(s -> new Dish(s.getId(), s.getNombre(), s.getPrecio(), s.getDescripcion(), s.getUrlImagen(),
                         s.getCategoria(), s.isActivo(), s.getIdRestaurante()));
+    }
+
+    @Override
+    public List<Dish> findAllByIds(Collection<Long> ids) {
+        return dishRepository.findAllById(ids).stream()
+                .map(s -> new Dish(s.getId(), s.getNombre(), s.getPrecio(), s.getDescripcion(), s.getUrlImagen(),
+                        s.getCategoria(), s.isActivo(), s.getIdRestaurante()))
+                .toList();
     }
 
     @Override

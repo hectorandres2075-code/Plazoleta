@@ -27,6 +27,11 @@ import com.plazoleta.infrastructure.output.persistence.repository.RestaurantRepo
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.plazoleta.application.port.input.CreateOrderUseCase;
+import com.plazoleta.application.port.output.OrderPersistencePort;
+import com.plazoleta.application.service.CreateOrderService;
+import com.plazoleta.infrastructure.output.persistence.adapter.OrderPersistenceAdapter;
+import com.plazoleta.infrastructure.output.persistence.repository.OrderRepository;
 
 @Configuration
 public class BeanConfiguration {
@@ -92,5 +97,19 @@ public class BeanConfiguration {
                                                            RestaurantPersistencePort restaurantPersistencePort,
                                                            AuthenticatedUserPort authenticatedUserPort) {
         return new UpdateDishStatusService(dishPersistencePort, restaurantPersistencePort, authenticatedUserPort);
+    }
+
+    @Bean
+    public OrderPersistencePort orderPersistencePort(OrderRepository orderRepository) {
+        return new OrderPersistenceAdapter(orderRepository);
+    }
+
+    @Bean
+    public CreateOrderUseCase createOrderUseCase(OrderPersistencePort orderPersistencePort,
+                                                 RestaurantPersistencePort restaurantPersistencePort,
+                                                 DishPersistencePort dishPersistencePort,
+                                                 AuthenticatedUserPort authenticatedUserPort) {
+        return new CreateOrderService(orderPersistencePort, restaurantPersistencePort,
+                dishPersistencePort, authenticatedUserPort);
     }
 }
