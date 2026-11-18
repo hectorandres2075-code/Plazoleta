@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Optional;
 
 public class OrderPersistenceAdapter implements OrderPersistencePort {
 
@@ -51,6 +52,11 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
         entity.setPin(order.getPin());
 
         return toModel(orderRepository.save(entity));
+    }
+
+    @Override
+    public Optional<Order> findById(Long id) {
+        return orderRepository.findById(id).map(this::toModel);
     }
 
     @Override

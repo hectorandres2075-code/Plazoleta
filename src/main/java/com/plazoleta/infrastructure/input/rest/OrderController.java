@@ -1,5 +1,6 @@
 package com.plazoleta.infrastructure.input.rest;
 
+import com.plazoleta.application.port.input.AssignOrderUseCase;
 import com.plazoleta.application.port.input.CreateOrderUseCase;
 import com.plazoleta.application.port.input.ListOrdersUseCase;
 import com.plazoleta.domain.model.Order;
@@ -16,6 +17,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,10 +32,22 @@ public class OrderController {
 
     private final CreateOrderUseCase createOrderUseCase;
     private final ListOrdersUseCase listOrdersUseCase;
+    private final AssignOrderUseCase assignOrderUseCase;
 
-    public OrderController(CreateOrderUseCase createOrderUseCase, ListOrdersUseCase listOrdersUseCase) {
+    public OrderController(CreateOrderUseCase createOrderUseCase, ListOrdersUseCase listOrdersUseCase,
+                           AssignOrderUseCase assignOrderUseCase) {
         this.createOrderUseCase = createOrderUseCase;
         this.listOrdersUseCase = listOrdersUseCase;
+        this.assignOrderUseCase = assignOrderUseCase;
+    }
+
+    @Operation(summary = "Asignarse a un pedido",
+            description = "Solo el EMPLEADO del restaurante. El pedido debe estar PENDIENTE; pasa a EN_PREPARACION "
+                    + "y queda con el empleado como chef asignado")
+    @SecurityRequirement(name = "bearerAuth")
+    @PatchMapping("/{id}/assign")
+    public OrderResponse assign(@PathVariable Long id) {
+        return OrderResponse.from(assignOrderUseCase.assignOrder(id));
     }
 
     @Operation(summary = "Listar pedidos por estado",

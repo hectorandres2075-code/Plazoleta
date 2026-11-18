@@ -4,6 +4,8 @@ import com.plazoleta.domain.exception.DishNotFoundException;
 import com.plazoleta.domain.exception.ActiveOrderExistsException;
 import com.plazoleta.domain.exception.InvalidDishException;
 import com.plazoleta.domain.exception.InvalidOrderException;
+import com.plazoleta.domain.exception.InvalidOrderStateException;
+import com.plazoleta.domain.exception.OrderNotFoundException;
 import com.plazoleta.domain.exception.InvalidPaginationException;
 import com.plazoleta.domain.exception.InvalidRestaurantException;
 import com.plazoleta.domain.exception.NotRestaurantEmployeeException;
@@ -36,6 +38,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidOrderException.class)
     public ResponseEntity<Map<String, String>> handleInvalidOrder(InvalidOrderException ex) {
         return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleOrderNotFound(OrderNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidOrderStateException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidState(InvalidOrderStateException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
     }
 
     @ExceptionHandler(ActiveOrderExistsException.class)
