@@ -39,6 +39,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Long userId = ((Number) claims.get("id")).longValue();
                 var auth = new UsernamePasswordAuthenticationToken(
                         userId, null, List.of(new SimpleGrantedAuthority("ROLE_" + rol)));
+                Object restaurante = claims.get("idRestaurante"); // solo los empleados lo traen
+                if (restaurante != null) {
+                    auth.setDetails(((Number) restaurante).longValue());
+                }
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (JwtException | IllegalArgumentException | NullPointerException e) {
                 SecurityContextHolder.clearContext(); // token inválido o vencido: sigue sin autenticar

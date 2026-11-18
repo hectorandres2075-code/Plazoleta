@@ -10,4 +10,11 @@ public class AuthenticatedUserAdapter implements AuthenticatedUserPort {
         // El filtro JWT guarda el id del usuario como "principal".
         return (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
+
+    @Override
+    public Long currentUserRestaurantId() {
+        // El filtro JWT guarda el restaurante del empleado en 'details'.
+        Object details = SecurityContextHolder.getContext().getAuthentication().getDetails();
+        return details instanceof Long idRestaurante ? idRestaurante : null;
+    }
 }

@@ -6,6 +6,7 @@ import com.plazoleta.domain.exception.InvalidDishException;
 import com.plazoleta.domain.exception.InvalidOrderException;
 import com.plazoleta.domain.exception.InvalidPaginationException;
 import com.plazoleta.domain.exception.InvalidRestaurantException;
+import com.plazoleta.domain.exception.NotRestaurantEmployeeException;
 import com.plazoleta.domain.exception.NotRestaurantOwnerException;
 import com.plazoleta.domain.exception.RestaurantNotFoundException;
 import com.plazoleta.domain.exception.RestaurantAlreadyExistsException;
@@ -55,6 +56,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RestaurantNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantNotFound(RestaurantNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(NotRestaurantEmployeeException.class)
+    public ResponseEntity<Map<String, String>> handleNotEmployee(NotRestaurantEmployeeException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", ex.getMessage()));
     }
 
     @ExceptionHandler(NotRestaurantOwnerException.class)

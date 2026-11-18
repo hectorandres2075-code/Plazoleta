@@ -32,6 +32,8 @@ import com.plazoleta.application.port.output.OrderPersistencePort;
 import com.plazoleta.application.service.CreateOrderService;
 import com.plazoleta.infrastructure.output.persistence.adapter.OrderPersistenceAdapter;
 import com.plazoleta.infrastructure.output.persistence.repository.OrderRepository;
+import com.plazoleta.application.port.input.ListOrdersUseCase;
+import com.plazoleta.application.service.ListOrdersService;
 
 @Configuration
 public class BeanConfiguration {
@@ -111,5 +113,11 @@ public class BeanConfiguration {
                                                  AuthenticatedUserPort authenticatedUserPort) {
         return new CreateOrderService(orderPersistencePort, restaurantPersistencePort,
                 dishPersistencePort, authenticatedUserPort);
+    }
+
+    @Bean
+    public ListOrdersUseCase listOrdersUseCase(OrderPersistencePort orderPersistencePort,
+                                               AuthenticatedUserPort authenticatedUserPort) {
+        return new ListOrdersService(orderPersistencePort, authenticatedUserPort);
     }
 }

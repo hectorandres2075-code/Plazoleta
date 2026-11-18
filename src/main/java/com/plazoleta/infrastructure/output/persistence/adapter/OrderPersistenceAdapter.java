@@ -4,9 +4,14 @@ import com.plazoleta.application.port.output.OrderPersistencePort;
 import com.plazoleta.domain.model.Order;
 import com.plazoleta.domain.model.OrderDish;
 import com.plazoleta.domain.model.OrderStatus;
+import com.plazoleta.domain.model.PageResult;
 import com.plazoleta.infrastructure.output.persistence.entity.OrderDishEntity;
 import com.plazoleta.infrastructure.output.persistence.entity.OrderEntity;
 import com.plazoleta.infrastructure.output.persistence.repository.OrderRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -51,6 +56,16 @@ public class OrderPersistenceAdapter implements OrderPersistencePort {
     @Override
     public boolean existsActiveByClient(Long idCliente) {
         return orderRepository.existsByIdClienteAndEstadoIn(idCliente, ESTADOS_ACTIVOS);
+    }
+
+    @Override
+    public PageResult<Order> findByRestaurantAndStatus(Long idRestaurante, OrderStatus estado, int page, int size) {
+        // Del más antiguo al más reciente: es el orden en que el restaurante debe atenderlos.
+        Page<OrderEntity> result = orderRepository.findByIdRestauranteAndEstado(
+                idRestaurante, estado, PageRequest.of(page, size, Sort.by("fecha")));
+        return new PageResult<>(
+                result.getContent().stream().map(this::toModel).toList(),
+                result.getNumber(), result.getSize(), result.getTotalElements(), result.getTotalPages());
     }
 
     private Order toModel(OrderEntity e) {
