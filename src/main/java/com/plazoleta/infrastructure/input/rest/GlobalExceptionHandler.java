@@ -1,9 +1,12 @@
 package com.plazoleta.infrastructure.input.rest;
 
 import com.plazoleta.domain.exception.DishNotFoundException;
+import com.plazoleta.domain.exception.ActiveOrderExistsException;
 import com.plazoleta.domain.exception.InvalidDishException;
+import com.plazoleta.domain.exception.InvalidOrderException;
 import com.plazoleta.domain.exception.InvalidPaginationException;
 import com.plazoleta.domain.exception.InvalidRestaurantException;
+import com.plazoleta.domain.exception.NotRestaurantEmployeeException;
 import com.plazoleta.domain.exception.NotRestaurantOwnerException;
 import com.plazoleta.domain.exception.RestaurantNotFoundException;
 import com.plazoleta.domain.exception.RestaurantAlreadyExistsException;
@@ -30,6 +33,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
     }
 
+    @ExceptionHandler(InvalidOrderException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidOrder(InvalidOrderException ex) {
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ActiveOrderExistsException.class)
+    public ResponseEntity<Map<String, String>> handleActiveOrder(ActiveOrderExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
+    }
+
     @ExceptionHandler(InvalidDishException.class)
     public ResponseEntity<Map<String, String>> handleInvalidDish(InvalidDishException ex) {
         return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
@@ -43,6 +56,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RestaurantNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleRestaurantNotFound(RestaurantNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(NotRestaurantEmployeeException.class)
+    public ResponseEntity<Map<String, String>> handleNotEmployee(NotRestaurantEmployeeException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", ex.getMessage()));
     }
 
     @ExceptionHandler(NotRestaurantOwnerException.class)
