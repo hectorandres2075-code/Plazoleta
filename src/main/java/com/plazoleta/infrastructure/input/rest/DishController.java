@@ -1,9 +1,11 @@
 package com.plazoleta.infrastructure.input.rest;
 
 import com.plazoleta.application.port.input.CreateDishUseCase;
+import com.plazoleta.application.port.input.UpdateDishStatusUseCase;
 import com.plazoleta.application.port.input.UpdateDishUseCase;
 import com.plazoleta.domain.model.Dish;
 import com.plazoleta.infrastructure.input.rest.dto.DishRequest;
+import com.plazoleta.infrastructure.input.rest.dto.DishStatusRequest;
 import com.plazoleta.infrastructure.input.rest.dto.DishUpdateRequest;
 import com.plazoleta.infrastructure.input.rest.dto.DishResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,10 +28,22 @@ public class DishController {
 
     private final CreateDishUseCase createDishUseCase;
     private final UpdateDishUseCase updateDishUseCase;
+    private final UpdateDishStatusUseCase updateDishStatusUseCase;
 
-    public DishController(CreateDishUseCase createDishUseCase, UpdateDishUseCase updateDishUseCase) {
+    public DishController(CreateDishUseCase createDishUseCase, UpdateDishUseCase updateDishUseCase,
+                          UpdateDishStatusUseCase updateDishStatusUseCase) {
         this.createDishUseCase = createDishUseCase;
         this.updateDishUseCase = updateDishUseCase;
+        this.updateDishStatusUseCase = updateDishStatusUseCase;
+    }
+
+    @Operation(summary = "Habilitar o deshabilitar plato", description = "Solo el PROPIETARIO del restaurante. activo=false oculta el plato del menú")
+    @SecurityRequirement(name = "bearerAuth")
+    @PatchMapping("/{id}/status")
+    public DishResponse updateStatus(@PathVariable Long id, @Valid @RequestBody DishStatusRequest request) {
+        Dish s = updateDishStatusUseCase.updateStatus(id, request.getActivo());
+        return new DishResponse(s.getId(), s.getNombre(), s.getPrecio(), s.getDescripcion(),
+                s.getUrlImagen(), s.getCategoria(), s.isActivo(), s.getIdRestaurante());
     }
 
     @Operation(summary = "Modificar plato", description = "Solo el PROPIETARIO del restaurante. Cambia únicamente precio y descripción")
