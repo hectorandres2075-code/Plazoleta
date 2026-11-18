@@ -8,6 +8,7 @@ import com.plazoleta.domain.exception.InvalidOrderStateException;
 import com.plazoleta.domain.exception.OrderNotFoundException;
 import com.plazoleta.domain.exception.InvalidPaginationException;
 import com.plazoleta.domain.exception.InvalidRestaurantException;
+import com.plazoleta.domain.exception.MessagingServiceUnavailableException;
 import com.plazoleta.domain.exception.NotRestaurantEmployeeException;
 import com.plazoleta.domain.exception.NotRestaurantOwnerException;
 import com.plazoleta.domain.exception.RestaurantNotFoundException;
@@ -83,6 +84,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RestaurantAlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> handleAlreadyExists(RestaurantAlreadyExistsException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(MessagingServiceUnavailableException.class)
+    public ResponseEntity<Map<String, String>> handleMessagingUnavailable(MessagingServiceUnavailableException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of("error", ex.getMessage()));
     }
 
     @ExceptionHandler(UserServiceUnavailableException.class)

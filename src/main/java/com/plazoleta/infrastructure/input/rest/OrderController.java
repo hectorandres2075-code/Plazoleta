@@ -3,6 +3,7 @@ package com.plazoleta.infrastructure.input.rest;
 import com.plazoleta.application.port.input.AssignOrderUseCase;
 import com.plazoleta.application.port.input.CreateOrderUseCase;
 import com.plazoleta.application.port.input.ListOrdersUseCase;
+import com.plazoleta.application.port.input.MarkOrderReadyUseCase;
 import com.plazoleta.domain.model.Order;
 import com.plazoleta.domain.model.OrderDish;
 import com.plazoleta.domain.model.OrderStatus;
@@ -33,12 +34,23 @@ public class OrderController {
     private final CreateOrderUseCase createOrderUseCase;
     private final ListOrdersUseCase listOrdersUseCase;
     private final AssignOrderUseCase assignOrderUseCase;
+    private final MarkOrderReadyUseCase markOrderReadyUseCase;
 
     public OrderController(CreateOrderUseCase createOrderUseCase, ListOrdersUseCase listOrdersUseCase,
-                           AssignOrderUseCase assignOrderUseCase) {
+                           AssignOrderUseCase assignOrderUseCase, MarkOrderReadyUseCase markOrderReadyUseCase) {
         this.createOrderUseCase = createOrderUseCase;
         this.listOrdersUseCase = listOrdersUseCase;
         this.assignOrderUseCase = assignOrderUseCase;
+        this.markOrderReadyUseCase = markOrderReadyUseCase;
+    }
+
+    @Operation(summary = "Marcar pedido como listo",
+            description = "Solo el EMPLEADO del restaurante. El pedido debe estar EN_PREPARACION; pasa a LISTO "
+                    + "y se le envía al cliente un SMS con el PIN para reclamarlo")
+    @SecurityRequirement(name = "bearerAuth")
+    @PatchMapping("/{id}/ready")
+    public OrderResponse ready(@PathVariable Long id) {
+        return OrderResponse.from(markOrderReadyUseCase.markReady(id));
     }
 
     @Operation(summary = "Asignarse a un pedido",

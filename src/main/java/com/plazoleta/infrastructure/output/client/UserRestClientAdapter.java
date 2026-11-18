@@ -38,6 +38,23 @@ public class UserRestClientAdapter implements UserServicePort {
         }
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public Optional<String> findPhoneById(Long userId) {
+        try {
+            Map<String, String> body = restClient.get()
+                    .uri("/api/v1/users/{id}/phone", userId)
+                    .header(HttpHeaders.AUTHORIZATION, currentAuthorizationHeader())
+                    .retrieve()
+                    .body(Map.class);
+            return Optional.ofNullable(body).map(b -> b.get("celular"));
+        } catch (HttpClientErrorException.NotFound e) {
+            return Optional.empty();
+        } catch (RestClientException e) {
+            throw new UserServiceUnavailableException();
+        }
+    }
+
     private String currentAuthorizationHeader() {
         var attrs = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         String header = attrs.getRequest().getHeader(HttpHeaders.AUTHORIZATION);

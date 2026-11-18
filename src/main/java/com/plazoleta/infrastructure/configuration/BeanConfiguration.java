@@ -36,6 +36,10 @@ import com.plazoleta.application.port.input.ListOrdersUseCase;
 import com.plazoleta.application.service.ListOrdersService;
 import com.plazoleta.application.port.input.AssignOrderUseCase;
 import com.plazoleta.application.service.AssignOrderService;
+import com.plazoleta.application.port.input.MarkOrderReadyUseCase;
+import com.plazoleta.application.port.output.MessagingServicePort;
+import com.plazoleta.application.service.MarkOrderReadyService;
+import com.plazoleta.infrastructure.output.client.MessagingRestClientAdapter;
 
 @Configuration
 public class BeanConfiguration {
@@ -127,5 +131,20 @@ public class BeanConfiguration {
     public AssignOrderUseCase assignOrderUseCase(OrderPersistencePort orderPersistencePort,
                                                  AuthenticatedUserPort authenticatedUserPort) {
         return new AssignOrderService(orderPersistencePort, authenticatedUserPort);
+    }
+
+    @Bean
+    public MessagingServicePort messagingServicePort(
+            @Value("${mensajeria.base-url:http://localhost:8083}") String baseUrl) {
+        return new MessagingRestClientAdapter(baseUrl);
+    }
+
+    @Bean
+    public MarkOrderReadyUseCase markOrderReadyUseCase(OrderPersistencePort orderPersistencePort,
+                                                       UserServicePort userServicePort,
+                                                       MessagingServicePort messagingServicePort,
+                                                       AuthenticatedUserPort authenticatedUserPort) {
+        return new MarkOrderReadyService(orderPersistencePort, userServicePort,
+                messagingServicePort, authenticatedUserPort);
     }
 }
